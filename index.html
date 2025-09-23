@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>物理作業分數登記系統</title>
+    <style>
+        body {
+            font-family: 'Microsoft JhengHei', '微軟正黑體', sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1, h2 {
+            color: #0056b3;
+            text-align: center;
+        }
+        #setup-container, #main-container {
+            width: 100%;
+            max-width: 900px;
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        #main-container {
+            display: none; /* Initially hidden */
+        }
+        .seating-chart-container {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .student-btn {
+            background-color: #e9ecef;
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            padding: 12px 5px;
+            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.2s;
+            font-size: 16px;
+            min-height: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .student-btn:hover {
+            background-color: #dbe4f0;
+            transform: translateY(-2px);
+        }
+        .student-btn.selected {
+            background-color: #ffc107; /* Bright yellow for selection */
+            color: #000;
+            font-weight: bold;
+            border-color: #e0a800;
+        }
+        .student-btn .seat-number {
+            font-size: 14px;
+            color: #6c757d;
+        }
+        .placeholder { visibility: hidden; }
+        .lectern {
+            grid-column: 1 / -1;
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            padding: 15px;
+            margin-top: 10px;
+            border-top: 2px solid #0056b3;
+            color: #0056b3;
+        }
+        .action-btn {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+        }
+        .action-btn:hover { background-color: #0056b3; }
+        .action-btn#generate-report-btn {
+            background-color: #28a745; /* Green for final report */
+        }
+        .action-btn#generate-report-btn:hover {
+             background-color: #218838;
+        }
+        #report-container {
+            margin-top: 30px;
+            width: 100%;
+            max-width: 600px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        th, td {
+            border: 1px solid #dee2e6;
+            padding: 12px;
+            text-align: center;
+        }
+        th { background-color: #007bff; color: white; }
+        tr:nth-child(even) { background-color: #f8f9fa; }
+        #stage-info {
+            font-size: 22px;
+            font-weight: bold;
+            color: #dc3545;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>物理作業分數登記系統</h1>
+
+    <div id="setup-container">
+        <h2>初始設定</h2>
+        <p>請輸入本次作業要登記的總階段數：</p>
+        <input type="number" id="stage-input" min="1" max="10" value="3" style="padding: 8px; font-size: 16px; width: 80px; text-align: center;">
+        <button class="action-btn" onclick="initializeSystem()">開始登記</button>
+    </div>
+
+    <div id="main-container">
+        <div id="stage-info"></div>
+        <div class="seating-chart-container" id="seating-chart">
+            </div>
+        <div class="lectern">講 台</div>
+        <button id="next-stage-btn" class="action-btn" onclick="completeStage()">完成此階段登記</button>
+    </div>
+
+    <div id="report-container">
+        </div>
+
+    <script>
+        const studentsData = [
+            { id: 26, name: '陳昱凱', gridArea: '1 / 1' }, { id: 14, name: '林子皓', gridArea: '1 / 2' },
+            { id: 24, name: '陳冬祥', gridArea: '1 / 3' }, { id: 20, name: '張晉嘉', gridArea: '1 / 4' },
+            { id: 8, name: '鄭寶兒', gridArea: '2 / 1' }, { id: 13, name: '李權倫', gridArea: '2 / 2' },
+            { id: 30, name: '陳家澤', gridArea: '2 / 3' }, { id: 4, name: '陳芊妤', gridArea: '2 / 4' },
+            { id: 7, name: '鄭均郁', gridArea: '2 / 5' }, { id: 18, name: '徐浩軒', gridArea: '2 / 6' },
+            { id: 17, name: '倪嘉駿', gridArea: '2 / 7' }, { id: 19, name: '張立昕', gridArea: '3 / 1' },
+            { id: 33, name: '黃翊軒', gridArea: '3 / 2' }, { id: 22, name: '許佑彬', gridArea: '3 / 3' },
+            { id: 27, name: '陳昱嘉', gridArea: '3 / 4' }, { id: 36, name: '蔡若瑾', gridArea: '3 / 5' },
+            { id: 6, name: '廖祐誼', gridArea: '3 / 6' }, { id: 39, name: '蘇奕睿', gridArea: '3 / 7' },
+            { id: 15, name: '林正濠', gridArea: '4 / 1' }, { id: 32, name: '黃冠瑜', gridArea: '4 / 2' },
+            { id: 2, name: '林書妤', gridArea: '4 / 3' }, { id: 10, name: '吳旻獻', gridArea: '4 / 4' },
+            { id: 38, name: '簡文淵', gridArea: '4 / 5' }, { id: 35, name: '蔡沅均', gridArea: '4 / 6' },
+            { id: 23, name: '郭方禾', gridArea: '4 / 7' }, { id: 21, name: '梁晉', gridArea: '5 / 1' },
+            { id: 12, name: '李尚軒', gridArea: '5 / 2' }, { id: 9, name: '王宏吏', gridArea: '5 / 3' },
+            { id: 34, name: '楊學明', gridArea: '5 / 4' }, { id: 1, name: '林芊臻', gridArea: '5 / 5' },
+            { id: 28, name: '陳柏安', gridArea: '5 / 6' }, { id: 31, name: '陶柏叡', gridArea: '5 / 7' },
+            { id: 11, name: '吳翊豪', gridArea: '6 / 1' }, { id: 5, name: '陳芊蓁', gridArea: '6 / 2' },
+            { id: 16, name: '林韋邑', gridArea: '6 / 3' }, { id: 37, name: '賴泳仲', gridArea: '6 / 4' },
+            { id: 25, name: '陳奕勛', gridArea: '6 / 5' }, { id: 3, name: '郭妤婕', gridArea: '6 / 6' },
+            { id: 29, name: '陳柏綸', gridArea: '6 / 7' }
+        ];
+
+        let totalStages = 0;
+        let currentStage = 1;
+        let allStudents = [];
+
+        function initializeSystem() {
+            const stageInput = document.getElementById('stage-input').value;
+            totalStages = parseInt(stageInput, 10);
+
+            if (isNaN(totalStages) || totalStages < 1) {
+                alert('請輸入有效的階段數！');
+                return;
+            }
+
+            // Prepare student data structure
+            const studentMap = new Map(studentsData.map(s => [s.id, s]));
+            for (let i = 1; i <= 39; i++) {
+                const student = studentMap.has(i) ? 
+                    {...studentMap.get(i), scores: Array(totalStages).fill(false), totalScore: 0} :
+                    { id: i, name: `座號 ${i}`, scores: Array(totalStages).fill(false), totalScore: 0 };
+                allStudents.push(student);
+            }
+
+            document.getElementById('setup-container').style.display = 'none';
+            document.getElementById('main-container').style.display = 'block';
+            
+            renderSeatingChart();
+            updateStageInfo();
+        }
+
+        function renderSeatingChart() {
+            const seatingChart = document.getElementById('seating-chart');
+            seatingChart.innerHTML = ''; // Clear previous chart
+
+            // Add placeholders for the grid
+            ['1 / 5', '1 / 6', '1 / 7'].forEach(area => {
+                const div = document.createElement('div');
+                div.className = 'placeholder';
+                div.style.gridArea = area;
+                seatingChart.appendChild(div);
+            });
+            
+            studentsData.forEach(studentInfo => {
+                const btn = document.createElement('button');
+                btn.className = 'student-btn';
+                btn.id = `student-${studentInfo.id}`;
+                btn.style.gridArea = studentInfo.gridArea;
+                btn.innerHTML = `${studentInfo.name}<br><span class="seat-number">${studentInfo.id}號</span>`;
+                btn.onclick = () => toggleSelection(studentInfo.id);
+                seatingChart.appendChild(btn);
+            });
+        }
+        
+        function updateStageInfo() {
+            const stageInfo = document.getElementById('stage-info');
+            if (currentStage <= totalStages) {
+                stageInfo.textContent = `第 ${currentStage} / ${totalStages} 階段登記中`;
+            } else {
+                stageInfo.textContent = `所有階段已登記完成！`;
+            }
+        }
+
+        function toggleSelection(studentId) {
+            const student = allStudents.find(s => s.id === studentId);
+            const btn = document.getElementById(`student-${studentId}`);
+            
+            // Toggle score for the current stage
+            student.scores[currentStage - 1] = !student.scores[currentStage - 1];
+            
+            // Toggle visual class
+            btn.classList.toggle('selected');
+        }
+
+        function completeStage() {
+            // Move to the next stage
+            currentStage++;
+            
+            // Reset button visuals for the next stage
+            const buttons = document.querySelectorAll('.student-btn');
+            buttons.forEach(btn => btn.classList.remove('selected'));
+            
+            if (currentStage > totalStages) {
+                // All stages are done
+                updateStageInfo();
+                const nextStageBtn = document.getElementById('next-stage-btn');
+                nextStageBtn.textContent = '產生分數總表';
+                nextStageBtn.id = 'generate-report-btn';
+                nextStageBtn.onclick = generateReport;
+            } else {
+                updateStageInfo();
+            }
+        }
+
+        function generateReport() {
+            const reportContainer = document.getElementById('report-container');
+            
+            // Calculate total scores
+            allStudents.forEach(student => {
+                student.totalScore = student.scores.filter(Boolean).length;
+            });
+
+            // Sort by seat number
+            allStudents.sort((a, b) => a.id - b.id);
+            
+            let tableHTML = `
+                <h2>分數總表 (共 ${totalStages} 階段)</h2>
+                <table>
+                    <thead>
+                        <tr><th>座號</th><th>姓名</th><th>總分</th></tr>
+                    </thead>
+                    <tbody>`;
+
+            allStudents.forEach(student => {
+                tableHTML += `
+                    <tr>
+                        <td>${student.id}</td>
+                        <td>${student.name}</td>
+                        <td>${student.totalScore}</td>
+                    </tr>`;
+            });
+
+            tableHTML += `</tbody></table>`;
+            reportContainer.innerHTML = tableHTML;
+            document.getElementById('main-container').style.display = 'none'; // Hide the seating chart
+        }
+    </script>
+
+</body>
+</html>
