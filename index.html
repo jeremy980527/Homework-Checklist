@@ -144,28 +144,38 @@
         </div>
 
     <script>
+        // ##### 更新後的座位表資料 #####
         const studentsData = [
-            { id: 26, name: '陳昱凱', gridArea: '1 / 1' }, { id: 14, name: '林子皓', gridArea: '1 / 2' },
-            { id: 24, name: '陳冬祥', gridArea: '1 / 3' }, { id: 20, name: '張晉嘉', gridArea: '1 / 4' },
-            { id: 8, name: '鄭寶兒', gridArea: '2 / 1' }, { id: 13, name: '李權倫', gridArea: '2 / 2' },
-            { id: 30, name: '陳家澤', gridArea: '2 / 3' }, { id: 4, name: '陳芊妤', gridArea: '2 / 4' },
-            { id: 7, name: '鄭均郁', gridArea: '2 / 5' }, { id: 18, name: '徐浩軒', gridArea: '2 / 6' },
-            { id: 17, name: '倪嘉駿', gridArea: '2 / 7' }, { id: 19, name: '張立昕', gridArea: '3 / 1' },
-            { id: 33, name: '黃翊軒', gridArea: '3 / 2' }, { id: 22, name: '許佑彬', gridArea: '3 / 3' },
-            { id: 27, name: '陳昱嘉', gridArea: '3 / 4' }, { id: 36, name: '蔡茗瑋', gridArea: '3 / 5' },
-            { id: 6, name: '廖祐誼', gridArea: '3 / 6' }, { id: 39, name: '蘇奕睿', gridArea: '3 / 7' },
-            { id: 15, name: '林正濠', gridArea: '4 / 1' }, { id: 32, name: '黃冠瑜', gridArea: '4 / 2' },
-            { id: 2, name: '林書妤', gridArea: '4 / 3' }, { id: 10, name: '吳旻獻', gridArea: '4 / 4' },
-            { id: 38, name: '簡文淵', gridArea: '4 / 5' }, { id: 35, name: '蔡沅均', gridArea: '4 / 6' },
-            { id: 23, name: '郭方禾', gridArea: '4 / 7' }, { id: 21, name: '梁晉', gridArea: '5 / 1' },
-            { id: 12, name: '李尚軒', gridArea: '5 / 2' }, { id: 9, name: '王宏吏', gridArea: '5 / 3' },
-            { id: 34, name: '楊學明', gridArea: '5 / 4' }, { id: 1, name: '林芊臻', gridArea: '5 / 5' },
-            { id: 28, name: '陳柏安', gridArea: '5 / 6' }, { id: 31, name: '陶柏叡', gridArea: '5 / 7' },
-            { id: 11, name: '吳翊豪', gridArea: '6 / 1' }, { id: 5, name: '陳芊蓁', gridArea: '6 / 2' },
-            { id: 16, name: '林韋邑', gridArea: '6 / 3' }, { id: 37, name: '賴泳仲', gridArea: '6 / 4' },
-            { id: 25, name: '陳奕勛', gridArea: '6 / 5' }, { id: 3, name: '郭妤婕', gridArea: '6 / 6' },
-            { id: 29, name: '陳柏綸', gridArea: '6 / 7' }
+            // Row 1
+            { id: 21, name: '梁晉', gridArea: '1 / 1' }, { id: 36, name: '蔡茗瑋', gridArea: '1 / 2' },
+            { id: 22, name: '許佑彬', gridArea: '1 / 3' }, { id: 37, name: '賴泳仲', gridArea: '1 / 4' },
+            // Row 2
+            { id: 14, name: '林子皓', gridArea: '2 / 1' }, { id: 32, name: '黃冠瑜', gridArea: '2 / 2' },
+            { id: 27, name: '陳昱嘉', gridArea: '2 / 3' }, { id: 15, name: '林正濠', gridArea: '2 / 4' },
+            { id: 8, name: '鄭寶兒', gridArea: '2 / 5' }, { id: 20, name: '張晉嘉', gridArea: '2 / 6' },
+            { id: 18, name: '徐浩軒', gridArea: '2 / 7' },
+            // Row 3
+            { id: 28, name: '陳柏安', gridArea: '3 / 1' }, { id: 10, name: '吳旻獻', gridArea: '3 / 2' },
+            { id: 35, name: '蔡沅均', gridArea: '3 / 3' }, { id: 3, name: '郭妤婕', gridArea: '3 / 4' },
+            { id: 5, name: '陳芊蓁', gridArea: '3 / 5' }, { id: 6, name: '廖祐誼', gridArea: '3 / 6' },
+            { id: 1, name: '林芊臻', gridArea: '3 / 7' },
+            // Row 4
+            { id: 39, name: '蘇奕睿', gridArea: '4 / 1' }, { id: 17, name: '倪嘉駿', gridArea: '4 / 2' },
+            { id: 9, name: '王宏吏', gridArea: '4 / 3' }, { id: 16, name: '林韋邑', gridArea: '4 / 4' },
+            { id: 12, name: '李尚軒', gridArea: '4 / 5' }, { id: 4, name: '陳芊妤', gridArea: '4 / 6' },
+            { id: 26, name: '陳昱凱', gridArea: '4 / 7' },
+            // Row 5
+            { id: 13, name: '李權倫', gridArea: '5 / 1' }, { id: 31, name: '陶柏叡', gridArea: '5 / 2' },
+            { id: 34, name: '楊學明', gridArea: '5 / 3' }, { id: 7, name: '鄭均郁', gridArea: '5 / 4' },
+            { id: 2, name: '林書妤', gridArea: '5 / 5' }, { id: 30, name: '陳家澤', gridArea: '5 / 6' },
+            { id: 33, name: '黃翊軒', gridArea: '5 / 7' },
+            // Row 6
+            { id: 24, name: '陳冬祥', gridArea: '6 / 1' }, { id: 25, name: '陳奕勛', gridArea: '6 / 2' },
+            { id: 19, name: '張立昕', gridArea: '6 / 3' }, { id: 11, name: '吳翊豪', gridArea: '6 / 4' },
+            { id: 29, name: '陳柏綸', gridArea: '6 / 5' }, { id: 23, name: '郭方禾', gridArea: '6 / 6' },
+            { id: 38, name: '簡文淵', gridArea: '6 / 7' }
         ];
+        // ##### 資料更新完畢 #####
 
         let totalStages = 0;
         let currentStage = 1;
@@ -200,7 +210,7 @@
             const seatingChart = document.getElementById('seating-chart');
             seatingChart.innerHTML = ''; // Clear previous chart
 
-            // Add placeholders for the grid
+            // (這個不用改) 第一排的空位，你的原始程式碼已經有處理了
             ['1 / 5', '1 / 6', '1 / 7'].forEach(area => {
                 const div = document.createElement('div');
                 div.className = 'placeholder';
